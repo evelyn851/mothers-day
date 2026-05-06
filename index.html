@@ -119,7 +119,7 @@
     border-radius: 14px;
     padding: 16px 18px;
     margin-bottom: 8px;
-    cursor: pointer;
+    position: relative;
     transition: border-color 0.2s, transform 0.15s;
     user-select: none;
   }
@@ -128,6 +128,17 @@
     border: 2px solid var(--rose);
     background: #FDF6F4;
   }
+  /* Invisible tap overlay covers the card but stops before the link row */
+  .card-tap {
+    position: absolute;
+    inset: 0;
+    bottom: 38px; /* leave room for the link at the bottom */
+    cursor: pointer;
+    border-radius: 14px;
+    z-index: 1;
+  }
+  .card-content { position: relative; z-index: 2; pointer-events: none; }
+  .card-link-row { position: relative; z-index: 3; margin-top: 10px; }
   .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
   .card-name {
     font-family: 'Playfair Display', serif;
@@ -157,6 +168,16 @@
   .tag-rose   { background: #FAEAE6; color: var(--rose-dark); }
   .tag-sage   { background: var(--sage-light); color: #3D6B52; }
   .tag-warm   { background: #FDF3E3; color: #8A5C1A; }
+  .tag-blue   { background: #E8F0FE; color: #2E5BAB; }
+
+  /* Vibe pill */
+  .vibe {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 400; color: var(--muted);
+    background: var(--cream); border: 0.5px solid var(--border);
+    border-radius: 20px; padding: 3px 9px; margin-top: 9px;
+  }
+  .vibe-icon { font-size: 12px; }
 
   /* Tip box */
   .tip-box { background: var(--blush); border-radius: 12px; padding: 14px 16px; margin-top: 20px; }
@@ -265,69 +286,88 @@
   <!-- ── Screen 1: Go out — browse & select ── -->
   <div id="s1" class="screen">
     <button class="back-btn" onclick="show('s0')">&#8592; Back</button>
-    <p class="section-label">Top picks · all within 10 min · tap to select</p>
+    <p class="section-label">6 picks · verified reservations · brunch & lunch · tap to select</p>
 
-    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Claudine Artisan Kitchen', 'Encino · ~0.7 mi · 8am–3pm')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Claudine Artisan Kitchen</span>
-          <p class="card-meta">Encino &nbsp;·&nbsp; ~0.7 mi &nbsp;·&nbsp; 8am – 3pm</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Go out — brunch/lunch', 'Petit Trois Le Valley', 'Sherman Oaks · ~2.3 mi · 8am–3pm Sun', '✨ Most elevated / special')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Petit Trois Le Valley</span><p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.3 mi &nbsp;·&nbsp; 8am – 3pm &nbsp;·&nbsp; OpenTable</p></div>
+          <span class="tag tag-rose">4.7 ★</span>
         </div>
-        <span class="tag tag-sage">Top pick</span>
+        <p class="card-desc">Michelin Bib Gourmand French brasserie. House-made croissants, legendary omelet, steak frites. Verified reservations on OpenTable — book now, will fill for Mother's Day.</p>
+        <div><span class="vibe"><span class="vibe-icon">✨</span> Most elevated / special</span></div>
       </div>
-      <p class="card-desc">Counter-service bakery-cafe — no waiting for servers, easiest with a toddler. Exceptional brunch food, fresh pastries. Kids menu available.</p>
-      <a class="card-link" href="http://www.claudinela.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.opentable.com/r/petite-trois-le-valley-sherman-oaks" target="_blank">Reserve on OpenTable &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'The Nook', 'Encino · ~1.5 mi · 8am–3pm')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">The Nook</span>
-          <p class="card-meta">Encino &nbsp;·&nbsp; ~1.5 mi &nbsp;·&nbsp; 8am – 3pm</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Go out — brunch/lunch', 'Osteria La Buca', 'Sherman Oaks · ~2.5 mi · 11:30am–3pm Sun lunch', '🍝 Best Italian lunch')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Osteria La Buca</span><p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.5 mi &nbsp;·&nbsp; 11:30am – 3pm &nbsp;·&nbsp; OpenTable</p></div>
+          <span class="tag tag-rose">4.7 ★</span>
         </div>
-        <span class="tag tag-sage">4.5 ★</span>
+        <p class="card-desc">Farm-to-table Italian — all pasta hand-made daily, produce from their own private farm. Bucatini carbonara, short rib ravioli, wood-fired pizza. Outdoor patio, dog-friendly.</p>
+        <div><span class="vibe"><span class="vibe-icon">🍝</span> Best Italian lunch</span></div>
       </div>
-      <p class="card-desc">Classic relaxed diner. Generous portions, warm table service. Famous for giant pancakes and Crab Benedict.</p>
-      <a class="card-link" href="https://www.thenookbreakfast.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.opentable.com/r/osteria-la-buca-sherman-oaks-los-angeles" target="_blank">Reserve on OpenTable &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Marmalade Cafe', 'Sherman Oaks · ~2.2 mi · 8am–8:30pm')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Marmalade Cafe</span>
-          <p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.2 mi &nbsp;·&nbsp; 8am – 8:30pm</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Go out — brunch/lunch', 'Samos Cafe & Grill', 'Sherman Oaks · ~2.2 mi · 8am–9pm Sun', '🌊 Most unique menu')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Samos Cafe & Grill</span><p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.2 mi &nbsp;·&nbsp; 8am – 9pm &nbsp;·&nbsp; OpenTable</p></div>
+          <span class="tag tag-blue">4.4 ★</span>
         </div>
-        <span class="tag tag-rose">Kids menu</span>
+        <p class="card-desc">Mediterranean-California fusion. 10 signature Eggs Benedicts (Lobster, Shawarma Chilaquiles), Santorini-style rotisserie chicken, fresh seafood, bison burger. Something for every palate.</p>
+        <div><span class="vibe"><span class="vibe-icon">🌊</span> Most unique menu</span></div>
       </div>
-      <p class="card-desc">Open all day — most flexible option. Outdoor patio, kids menu, reservations available. Great for a leisurely lunch.</p>
-      <a class="card-link" href="https://www.marmaladecafe.com/locations#ShermanOaks-Location" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.opentable.com/r/samos-cafe-and-grill-los-angeles" target="_blank">Reserve on OpenTable &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Sweet Butter', 'Sherman Oaks · ~2.8 mi · 8am–7pm')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Sweet Butter</span>
-          <p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.8 mi &nbsp;·&nbsp; 8am – 7pm</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Go out — brunch/lunch', &quot;Hugo's Restaurant&quot;, 'Studio City · ~3.5 mi · 8am–9pm Sun', '🌿 Best healthy / organic')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Hugo's Restaurant</span><p class="card-meta">Studio City &nbsp;·&nbsp; ~3.5 mi &nbsp;·&nbsp; 8am – 9pm &nbsp;·&nbsp; Reserve via website</p></div>
+          <span class="tag tag-sage">4.4 ★</span>
         </div>
+        <p class="card-desc">California institution since 1980. From-scratch organic cuisine, famous for brunch but great all day. Pasta Mama, Hugo's Burger, vegan & gluten-free options. Dog-friendly garden patio, very family-friendly.</p>
+        <div><span class="vibe"><span class="vibe-icon">🌿</span> Best healthy / organic · most family-friendly</span></div>
       </div>
-      <p class="card-desc">Homey neighborhood gem loved by locals. Exceptional pancakes, all-day breakfast & lunch. Warm and cozy atmosphere.</p>
-      <a class="card-link" href="https://www.sweetbutterkitchen.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.hugosrestaurant.com/reservations" target="_blank">Reserve via website &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Blu Jam Cafe', 'Sherman Oaks · ~2.3 mi · 8:30am–3pm')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Blu Jam Cafe</span>
-          <p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.3 mi &nbsp;·&nbsp; 8:30am – 3pm</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Go out — brunch/lunch', 'Casa Vega', 'Sherman Oaks · ~2.3 mi · 11am–midnight Sun', '🎉 Most festive / celebratory')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Casa Vega</span><p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.3 mi &nbsp;·&nbsp; 11am – midnight &nbsp;·&nbsp; (818) 788-4868</p></div>
+          <span class="tag tag-warm">4.4 ★</span>
         </div>
-        <span class="tag tag-warm">No reservations</span>
+        <p class="card-desc">Sherman Oaks institution since 1956. Legendary margaritas, traditional Mexican comfort food, homemade guacamole. Big festive booths, genuinely family-welcoming. Great for a celebration lunch.</p>
+        <div><span class="vibe"><span class="vibe-icon">🎉</span> Most festive / celebratory</span></div>
       </div>
-      <p class="card-desc">Famous crunchy French toast and European-inspired brunch. Dog-friendly patio. Arrive early on Mother's Day.</p>
-      <a class="card-link" href="http://www.blujamcafe.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.casavega.com/" target="_blank">Visit website &#8599;</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Go out — brunch/lunch', 'Marmalade Cafe', 'Sherman Oaks · ~2.2 mi · 8am–8:30pm Sun', '🕐 Most flexible timing')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Marmalade Cafe</span><p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.2 mi &nbsp;·&nbsp; 8am – 8:30pm &nbsp;·&nbsp; OpenTable</p></div>
+          <span class="tag tag-sage">4.3 ★</span>
+        </div>
+        <p class="card-desc">California comfort food with outdoor patio and kids menu. Open all day — the safest pick if baby's schedule shifts unexpectedly. Reliable, family-friendly, always consistent.</p>
+        <div><span class="vibe"><span class="vibe-icon">🕐</span> Most flexible timing · kids menu</span></div>
+      </div>
+      <div class="card-link-row"><a class="card-link" href="https://www.marmaladecafe.com/locations#ShermanOaks-Location" target="_blank">Visit website &#8599;</a></div>
     </div>
 
     <div class="tip-box">
-      <p><strong>Just browsing?</strong> Tap any card to select it. A confirm button will appear — nothing is recorded until you confirm.</p>
+      <p><strong>Tap anywhere on a card</strong> to select it — the confirm button appears at the bottom. Use <em>Visit/Reserve</em> to check the restaurant before deciding. Nothing is recorded until you confirm.</p>
     </div>
 
     <div class="confirm-bar">
@@ -340,69 +380,69 @@
     <button class="back-btn" onclick="show('s0')">&#8592; Back</button>
     <p class="section-label">Michelin-pedigree · tap to select</p>
 
-    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Platesfull', 'From $115/guest · Min. $500')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Platesfull</span>
-          <p class="card-meta">From $115/guest &nbsp;·&nbsp; Min. $500</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Stay in — private chef', 'Platesfull', 'From $115/guest · Min. $500')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Platesfull</span><p class="card-meta">From $115/guest &nbsp;·&nbsp; Min. $500</p></div>
+          <span class="tag tag-rose">Michelin</span>
         </div>
-        <span class="tag tag-rose">Michelin</span>
+        <p class="card-desc">Chefs trained under Joël Robuchon & Alain Ducasse. Full service: custom menu, shopping, cooking, plating & cleanup.</p>
       </div>
-      <p class="card-desc">Chefs trained under Joël Robuchon & Alain Ducasse. Full service: custom menu, shopping, cooking, plating & cleanup.</p>
-      <a class="card-link" href="https://platesfull.com/personal-chef/los-angeles" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://platesfull.com/personal-chef/los-angeles" target="_blank">Visit website &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Wolfgang Puck Catering', 'Premium · Custom quote')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Wolfgang Puck Catering</span>
-          <p class="card-meta">Premium &nbsp;·&nbsp; Custom quote</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Stay in — private chef', 'Wolfgang Puck Catering', 'Premium · Custom quote')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Wolfgang Puck Catering</span><p class="card-meta">Premium &nbsp;·&nbsp; Custom quote</p></div>
+          <span class="tag tag-rose">A-list</span>
         </div>
-        <span class="tag tag-rose">A-list</span>
+        <p class="card-desc">Team behind Spago & the Academy Awards Governors Ball. The most elevated at-home dining experience available.</p>
       </div>
-      <p class="card-desc">Team behind Spago & the Academy Awards Governors Ball. The most elevated at-home dining experience available.</p>
-      <a class="card-link" href="https://www.wolfgangpuck.com/catering" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.wolfgangpuck.com/catering" target="_blank">Visit website &#8599;</a></div>
     </div>
 
     <p class="section-label">Premium & local · tap to select</p>
 
-    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Homegrown Kitchen', 'Encino & Sherman Oaks · Custom quote')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Homegrown Kitchen</span>
-          <p class="card-meta">Encino & Sherman Oaks &nbsp;·&nbsp; Custom quote</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Stay in — private chef', 'Homegrown Kitchen', 'Encino & Sherman Oaks · Custom quote')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Homegrown Kitchen</span><p class="card-meta">Encino & Sherman Oaks &nbsp;·&nbsp; Custom quote</p></div>
+          <span class="tag tag-sage">Local</span>
         </div>
-        <span class="tag tag-sage">Local</span>
+        <p class="card-desc">Serves Encino & Sherman Oaks directly. 3–5 course dinners for 2–25 guests. Chef shops, cooks, serves, and fully cleans up.</p>
       </div>
-      <p class="card-desc">Serves Encino & Sherman Oaks directly. 3–5 course dinners for 2–25 guests. Chef shops, cooks, serves, and fully cleans up.</p>
-      <a class="card-link" href="https://www.homegrown.kitchen/private-chef" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.homegrown.kitchen/private-chef" target="_blank">Visit website &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Cozymeal Luxury', 'Varies by chef · 424-295-0515')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Cozymeal Luxury</span>
-          <p class="card-meta">Varies by chef &nbsp;·&nbsp; 424-295-0515</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Stay in — private chef', 'Cozymeal Luxury', 'Varies by chef · 424-295-0515')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Cozymeal Luxury</span><p class="card-meta">Varies by chef &nbsp;·&nbsp; 424-295-0515</p></div>
         </div>
+        <p class="card-desc">Browse curated luxury-tier LA chefs by cuisine and dietary needs. Verified reviews, pricing shown before you commit.</p>
       </div>
-      <p class="card-desc">Browse curated luxury-tier LA chefs by cuisine and dietary needs. Verified reviews, pricing shown before you commit.</p>
-      <a class="card-link" href="https://www.cozymeal.com/los-angeles/personal-chefs/luxury-experiences" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.cozymeal.com/los-angeles/personal-chefs/luxury-experiences" target="_blank">Visit website &#8599;</a></div>
     </div>
 
-    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Take a Chef', '~$139–$176/person · 4.71/5 stars')">
-      <div class="card-header">
-        <div>
-          <span class="card-name">Take a Chef</span>
-          <p class="card-meta">~$139–$176/person &nbsp;·&nbsp; 4.71/5 stars</p>
+    <div class="card">
+      <div class="card-tap" onclick="selectOption(this, 'Stay in — private chef', 'Take a Chef', '~$139–$176/person · 4.71/5 stars')"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <div><span class="card-name">Take a Chef</span><p class="card-meta">~$139–$176/person &nbsp;·&nbsp; 4.71/5 stars</p></div>
+          <span class="tag tag-sage">Marketplace</span>
         </div>
-        <span class="tag tag-sage">Marketplace</span>
+        <p class="card-desc">Post your request → chefs pitch menus → you pick the best match. 900+ LA chefs. Most flexible option.</p>
       </div>
-      <p class="card-desc">Post your request → chefs pitch menus → you pick the best match. 900+ LA chefs. Most flexible option.</p>
-      <a class="card-link" href="https://www.takeachef.com/en-us/private-chef/sherman-oaks" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+      <div class="card-link-row"><a class="card-link" href="https://www.takeachef.com/en-us/private-chef/sherman-oaks" target="_blank">Visit website &#8599;</a></div>
     </div>
 
     <div class="tip-box">
-      <p><strong>Just browsing?</strong> Tap any card to select it. A confirm button will appear — nothing is recorded until you confirm.</p>
+      <p><strong>Tap anywhere on a card</strong> to select it. Use <em>Visit website</em> to browse before deciding. Nothing is recorded until you confirm.</p>
     </div>
 
     <div class="confirm-bar">
@@ -418,9 +458,14 @@
       <p class="summary-label">Your selection</p>
       <p class="summary-value" id="sum-option">—</p>
       <p class="summary-sub" id="sum-meta">—</p>
-      <div style="margin: 16px 0; height: 1px; background: var(--border);"></div>
+      <div style="margin: 12px 0; height: 1px; background: var(--border);"></div>
       <p class="summary-label">Type</p>
       <p class="summary-value" id="sum-type">—</p>
+      <div id="sum-vibe-wrap" style="margin-top:10px; display:none;">
+        <div style="margin: 12px 0; height: 1px; background: var(--border);"></div>
+        <p class="summary-label">Vibe</p>
+        <p class="summary-sub" id="sum-vibe" style="font-style:italic; margin-top:4px;">—</p>
+      </div>
     </div>
 
     <p style="font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 16px; font-weight: 300;">Happy with this? Tap confirm and we'll lock it in.</p>
@@ -449,7 +494,7 @@
   const ENTRY_TYPE   = 'entry.884552805';
   const ENTRY_OPTION = 'entry.1802446348';
 
-  let state = { type: '', option: '', meta: '', fromScreen: 's1' };
+  let state = { type: '', option: '', meta: '', vibe: '', fromScreen: 's1' };
 
   function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -460,14 +505,14 @@
   function goOut()  { state.fromScreen = 's1'; show('s1'); }
   function stayIn() { state.fromScreen = 's2'; show('s2'); }
 
-  function selectOption(card, type, option, meta) {
-    // Deselect all cards in this screen
+  function selectOption(tapDiv, type, option, meta, vibe) {
+    const card = tapDiv.closest('.card');
     card.closest('.screen').querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     state.type   = type;
     state.option = option;
     state.meta   = meta;
-    // Show confirm button
+    state.vibe   = vibe || '';
     const screen = state.fromScreen;
     const btn = document.getElementById('confirm-' + screen);
     btn.textContent = 'Confirm "' + option + '" →';
@@ -478,6 +523,13 @@
     document.getElementById('sum-option').textContent = state.option;
     document.getElementById('sum-meta').textContent   = state.meta;
     document.getElementById('sum-type').textContent   = state.type;
+    const vibeWrap = document.getElementById('sum-vibe-wrap');
+    if (state.vibe) {
+      document.getElementById('sum-vibe').textContent = state.vibe;
+      vibeWrap.style.display = 'block';
+    } else {
+      vibeWrap.style.display = 'none';
+    }
     show('s3');
   }
 
