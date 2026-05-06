@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mother's Day — Dining Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFDF9;
+    --blush: #F2E8E0;
+    --rose: #C4796A;
+    --rose-dark: #9E5A4D;
+    --sage: #7A9E8A;
+    --sage-light: #EAF2ED;
+    --charcoal: #2C2825;
+    --muted: #8A8178;
+    --border: rgba(44,40,37,0.10);
+    --border-hover: rgba(44,40,37,0.22);
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+  header {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    padding: 52px 0 36px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--charcoal);
+    margin-bottom: 10px;
+  }
+  h1 em { font-style: italic; color: var(--rose); }
+  .subtitle {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .divider {
+    width: 40px; height: 1px;
+    background: var(--rose);
+    margin: 20px auto;
+    opacity: 0.4;
+  }
+  .container { width: 100%; max-width: 600px; }
+
+  /* Screens */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.28s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Step 1 — big choice */
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .choice-btn {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, transform 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+  }
+  .choice-btn:hover { border-color: var(--rose); transform: translateY(-2px); }
+  .choice-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+  .choice-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; color: var(--charcoal); display: block; margin-bottom: 5px; }
+  .choice-desc { font-size: 12px; font-weight: 300; color: var(--muted); line-height: 1.5; display: block; }
+
+  /* Back button */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: var(--muted);
+    cursor: pointer; margin-bottom: 24px;
+    background: none; border: none;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.04em; padding: 0;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--charcoal); }
+
+  /* Section labels */
+  .section-label {
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin: 24px 0 10px;
+  }
+
+  /* Option cards — browseable, selectable */
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    user-select: none;
+  }
+  .card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+  .card.selected {
+    border: 2px solid var(--rose);
+    background: #FDF6F4;
+  }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-weight: 400;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .card-name:hover { color: var(--rose); }
+  .card-meta { font-size: 11px; font-weight: 300; color: var(--muted); margin-top: 2px; }
+  .card-desc { font-size: 12px; font-weight: 300; color: var(--muted); line-height: 1.55; margin-top: 8px; }
+  .card-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500; color: var(--rose);
+    text-decoration: none; margin-top: 10px;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+  }
+  .card-link:hover { opacity: 0.7; }
+
+  /* Tags */
+  .tag {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    letter-spacing: 0.05em; padding: 3px 9px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0; margin-left: 8px;
+  }
+  .tag-rose   { background: #FAEAE6; color: var(--rose-dark); }
+  .tag-sage   { background: var(--sage-light); color: #3D6B52; }
+  .tag-warm   { background: #FDF3E3; color: #8A5C1A; }
+
+  /* Tip box */
+  .tip-box { background: var(--blush); border-radius: 12px; padding: 14px 16px; margin-top: 20px; }
+  .tip-box p { font-size: 12px; font-weight: 300; color: var(--rose-dark); line-height: 1.6; }
+  .tip-box strong { font-weight: 500; }
+
+  /* Confirm CTA */
+  .confirm-bar {
+    position: sticky;
+    bottom: 0;
+    padding: 16px 0 8px;
+    background: linear-gradient(to bottom, transparent, var(--cream) 30%);
+    margin-top: 20px;
+  }
+  .confirm-btn {
+    width: 100%;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: none;
+    animation: fadeUp 0.2s ease;
+  }
+  .confirm-btn.visible { display: block; }
+  .confirm-btn:hover { background: var(--rose-dark); transform: translateY(-1px); }
+  .confirm-btn:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+
+  /* Summary screen */
+  .summary-box {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .summary-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .summary-value { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--charcoal); margin-bottom: 4px; }
+  .summary-sub { font-size: 12px; color: var(--muted); font-weight: 300; }
+  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .btn-change {
+    background: none; border: 1px solid var(--border-hover);
+    border-radius: 12px; padding: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--muted); cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-change:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .btn-submit {
+    background: var(--rose); color: #fff;
+    border: none; border-radius: 12px; padding: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, transform 0.15s;
+  }
+  .btn-submit:hover { background: var(--rose-dark); transform: translateY(-1px); }
+  .btn-submit:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+
+  /* Success screen */
+  .success-icon { font-size: 48px; text-align: center; display: block; margin-bottom: 16px; }
+  .success-title { font-family: 'Playfair Display', serif; font-size: 26px; text-align: center; margin-bottom: 8px; color: var(--charcoal); }
+  .success-sub { font-size: 14px; font-weight: 300; color: var(--muted); text-align: center; line-height: 1.6; }
+
+  footer {
+    width: 100%; max-width: 600px; text-align: center;
+    margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  footer p { font-size: 11px; color: var(--muted); font-weight: 300; letter-spacing: 0.03em; }
+  .petal { display: inline-block; color: var(--rose); opacity: 0.5; font-size: 10px; margin: 0 6px; }
+  a.inline { color: var(--rose); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Mother's Day · Encino / Sherman Oaks</p>
+  <h1>How would you like<br>to <em>celebrate?</em></h1>
+  <div class="divider"></div>
+  <p class="subtitle">Browse the options, pick your favourite,<br>then confirm — only your confirmation gets recorded.</p>
+</header>
+
+<div class="container">
+
+  <!-- ── Screen 0: Big choice ── -->
+  <div id="s0" class="screen active">
+    <div class="choice-grid">
+      <button class="choice-btn" onclick="goOut()">
+        <span class="choice-icon">&#x1F375;</span>
+        <span class="choice-title">Go out</span>
+        <span class="choice-desc">Brunch or lunch at a toddler-friendly spot nearby</span>
+      </button>
+      <button class="choice-btn" onclick="stayIn()">
+        <span class="choice-icon">&#x1F373;</span>
+        <span class="choice-title">Stay in</span>
+        <span class="choice-desc">A private chef brings fine dining home</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Screen 1: Go out — browse & select ── -->
+  <div id="s1" class="screen">
+    <button class="back-btn" onclick="show('s0')">&#8592; Back</button>
+    <p class="section-label">Top picks · all within 10 min · tap to select</p>
+
+    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Claudine Artisan Kitchen', 'Encino · ~0.7 mi · 8am–3pm')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Claudine Artisan Kitchen</span>
+          <p class="card-meta">Encino &nbsp;·&nbsp; ~0.7 mi &nbsp;·&nbsp; 8am – 3pm</p>
+        </div>
+        <span class="tag tag-sage">Top pick</span>
+      </div>
+      <p class="card-desc">Counter-service bakery-cafe — no waiting for servers, easiest with a toddler. Exceptional brunch food, fresh pastries. Kids menu available.</p>
+      <a class="card-link" href="http://www.claudinela.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'The Nook', 'Encino · ~1.5 mi · 8am–3pm')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">The Nook</span>
+          <p class="card-meta">Encino &nbsp;·&nbsp; ~1.5 mi &nbsp;·&nbsp; 8am – 3pm</p>
+        </div>
+        <span class="tag tag-sage">4.5 ★</span>
+      </div>
+      <p class="card-desc">Classic relaxed diner. Generous portions, warm table service. Famous for giant pancakes and Crab Benedict.</p>
+      <a class="card-link" href="https://www.thenookbreakfast.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Marmalade Cafe', 'Sherman Oaks · ~2.2 mi · 8am–8:30pm')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Marmalade Cafe</span>
+          <p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.2 mi &nbsp;·&nbsp; 8am – 8:30pm</p>
+        </div>
+        <span class="tag tag-rose">Kids menu</span>
+      </div>
+      <p class="card-desc">Open all day — most flexible option. Outdoor patio, kids menu, reservations available. Great for a leisurely lunch.</p>
+      <a class="card-link" href="https://www.marmaladecafe.com/locations#ShermanOaks-Location" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Sweet Butter', 'Sherman Oaks · ~2.8 mi · 8am–7pm')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Sweet Butter</span>
+          <p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.8 mi &nbsp;·&nbsp; 8am – 7pm</p>
+        </div>
+      </div>
+      <p class="card-desc">Homey neighborhood gem loved by locals. Exceptional pancakes, all-day breakfast & lunch. Warm and cozy atmosphere.</p>
+      <a class="card-link" href="https://www.sweetbutterkitchen.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Go out — brunch/lunch', 'Blu Jam Cafe', 'Sherman Oaks · ~2.3 mi · 8:30am–3pm')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Blu Jam Cafe</span>
+          <p class="card-meta">Sherman Oaks &nbsp;·&nbsp; ~2.3 mi &nbsp;·&nbsp; 8:30am – 3pm</p>
+        </div>
+        <span class="tag tag-warm">No reservations</span>
+      </div>
+      <p class="card-desc">Famous crunchy French toast and European-inspired brunch. Dog-friendly patio. Arrive early on Mother's Day.</p>
+      <a class="card-link" href="http://www.blujamcafe.com/" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="tip-box">
+      <p><strong>Just browsing?</strong> Tap any card to select it. A confirm button will appear — nothing is recorded until you confirm.</p>
+    </div>
+
+    <div class="confirm-bar">
+      <button id="confirm-s1" class="confirm-btn" onclick="goToSummary()">This is my pick &#8594;</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 2: Stay in — browse & select ── -->
+  <div id="s2" class="screen">
+    <button class="back-btn" onclick="show('s0')">&#8592; Back</button>
+    <p class="section-label">Michelin-pedigree · tap to select</p>
+
+    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Platesfull', 'From $115/guest · Min. $500')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Platesfull</span>
+          <p class="card-meta">From $115/guest &nbsp;·&nbsp; Min. $500</p>
+        </div>
+        <span class="tag tag-rose">Michelin</span>
+      </div>
+      <p class="card-desc">Chefs trained under Joël Robuchon & Alain Ducasse. Full service: custom menu, shopping, cooking, plating & cleanup.</p>
+      <a class="card-link" href="https://platesfull.com/personal-chef/los-angeles" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Wolfgang Puck Catering', 'Premium · Custom quote')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Wolfgang Puck Catering</span>
+          <p class="card-meta">Premium &nbsp;·&nbsp; Custom quote</p>
+        </div>
+        <span class="tag tag-rose">A-list</span>
+      </div>
+      <p class="card-desc">Team behind Spago & the Academy Awards Governors Ball. The most elevated at-home dining experience available.</p>
+      <a class="card-link" href="https://www.wolfgangpuck.com/catering" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <p class="section-label">Premium & local · tap to select</p>
+
+    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Homegrown Kitchen', 'Encino & Sherman Oaks · Custom quote')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Homegrown Kitchen</span>
+          <p class="card-meta">Encino & Sherman Oaks &nbsp;·&nbsp; Custom quote</p>
+        </div>
+        <span class="tag tag-sage">Local</span>
+      </div>
+      <p class="card-desc">Serves Encino & Sherman Oaks directly. 3–5 course dinners for 2–25 guests. Chef shops, cooks, serves, and fully cleans up.</p>
+      <a class="card-link" href="https://www.homegrown.kitchen/private-chef" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Cozymeal Luxury', 'Varies by chef · 424-295-0515')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Cozymeal Luxury</span>
+          <p class="card-meta">Varies by chef &nbsp;·&nbsp; 424-295-0515</p>
+        </div>
+      </div>
+      <p class="card-desc">Browse curated luxury-tier LA chefs by cuisine and dietary needs. Verified reviews, pricing shown before you commit.</p>
+      <a class="card-link" href="https://www.cozymeal.com/los-angeles/personal-chefs/luxury-experiences" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="card" onclick="selectOption(this, 'Stay in — private chef', 'Take a Chef', '~$139–$176/person · 4.71/5 stars')">
+      <div class="card-header">
+        <div>
+          <span class="card-name">Take a Chef</span>
+          <p class="card-meta">~$139–$176/person &nbsp;·&nbsp; 4.71/5 stars</p>
+        </div>
+        <span class="tag tag-sage">Marketplace</span>
+      </div>
+      <p class="card-desc">Post your request → chefs pitch menus → you pick the best match. 900+ LA chefs. Most flexible option.</p>
+      <a class="card-link" href="https://www.takeachef.com/en-us/private-chef/sherman-oaks" target="_blank" onclick="event.stopPropagation()">Visit website &#8599;</a>
+    </div>
+
+    <div class="tip-box">
+      <p><strong>Just browsing?</strong> Tap any card to select it. A confirm button will appear — nothing is recorded until you confirm.</p>
+    </div>
+
+    <div class="confirm-bar">
+      <button id="confirm-s2" class="confirm-btn" onclick="goToSummary()">This is my pick &#8594;</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 3: Summary & confirm ── -->
+  <div id="s3" class="screen">
+    <button class="back-btn" onclick="goBack()">&#8592; Change my mind</button>
+
+    <div class="summary-box">
+      <p class="summary-label">Your selection</p>
+      <p class="summary-value" id="sum-option">—</p>
+      <p class="summary-sub" id="sum-meta">—</p>
+      <div style="margin: 16px 0; height: 1px; background: var(--border);"></div>
+      <p class="summary-label">Type</p>
+      <p class="summary-value" id="sum-type">—</p>
+    </div>
+
+    <p style="font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 16px; font-weight: 300;">Happy with this? Tap confirm and we'll lock it in.</p>
+
+    <div class="action-row">
+      <button class="btn-change" onclick="goBack()">&#8592; Go back</button>
+      <button class="btn-submit" id="submit-btn" onclick="submitChoice()">Confirm ✓</button>
+    </div>
+  </div>
+
+  <!-- ── Screen 4: Success ── -->
+  <div id="s4" class="screen" style="padding: 40px 0; text-align: center;">
+    <span class="success-icon">🌸</span>
+    <p class="success-title">All set!</p>
+    <p class="success-sub" id="success-msg">Your choice has been noted.<br>Happy Mother's Day!</p>
+  </div>
+
+</div>
+
+<footer>
+  <p>Mother's Day <span class="petal">✿</span> Encino · Sherman Oaks</p>
+</footer>
+
+<script>
+  const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdonIyvMGYBx5O3svb-B3-jL3Jxv_KsNHmMXGlnASfe1SwX6Q/formResponse';
+  const ENTRY_TYPE   = 'entry.884552805';
+  const ENTRY_OPTION = 'entry.1802446348';
+
+  let state = { type: '', option: '', meta: '', fromScreen: 's1' };
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goOut()  { state.fromScreen = 's1'; show('s1'); }
+  function stayIn() { state.fromScreen = 's2'; show('s2'); }
+
+  function selectOption(card, type, option, meta) {
+    // Deselect all cards in this screen
+    card.closest('.screen').querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.type   = type;
+    state.option = option;
+    state.meta   = meta;
+    // Show confirm button
+    const screen = state.fromScreen;
+    const btn = document.getElementById('confirm-' + screen);
+    btn.textContent = 'Confirm "' + option + '" →';
+    btn.classList.add('visible');
+  }
+
+  function goToSummary() {
+    document.getElementById('sum-option').textContent = state.option;
+    document.getElementById('sum-meta').textContent   = state.meta;
+    document.getElementById('sum-type').textContent   = state.type;
+    show('s3');
+  }
+
+  function goBack() {
+    show(state.fromScreen);
+  }
+
+  function submitChoice() {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    // Silent submit via hidden iframe (avoids CORS/redirect issues)
+    const iframe = document.createElement('iframe');
+    iframe.name   = 'hidden-submit';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = FORM_URL;
+    form.target = 'hidden-submit';
+
+    [
+      [ENTRY_TYPE,   state.type],
+      [ENTRY_OPTION, state.option],
+    ].forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type  = 'hidden';
+      input.name  = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // Show success after a beat
+    setTimeout(() => {
+      document.getElementById('success-msg').innerHTML =
+        '<strong>' + state.option + '</strong> has been noted.<br>Happy Mother\'s Day! 🌸';
+      show('s4');
+      // Cleanup
+      document.body.removeChild(form);
+      setTimeout(() => document.body.removeChild(iframe), 3000);
+    }, 1200);
+  }
+</script>
+</body>
+</html>
